@@ -32,9 +32,17 @@ sudo apt install mongodb-org
 Also will be installed `mongodb-org-server`, `mongodb-org-mongos`,
 `mongodb-org-shell`, `mongodb-org-tools`.
 
+Install Neo4j:
+
+[See official documentation.](https://neo4j.com/docs/operations-manual/current/installation/linux/debian/)
+
 Clone latest Testero:
 
 `git clone https://github.com/severe-island/testero.git`
+
+or:
+
+`git clone https://github.com/easimonenko/testero.git`
 
 Install packages:
 
@@ -42,12 +50,62 @@ Install packages:
 npm install
 ```
 
+## Configuring
+
+Edit configuration files:
+
+- development mode: <../config/development.json>
+- production mode: <../config/production.json>
+- testing mode: <../config/testing.json>
+
+For setting of port for web-server add parameter:
+
+``` json
+"port": 3000
+```
+
+For usege of MongoDB add following lines:
+
+``` json
+"mongodb": {
+  "name": "testero-development",
+  "port": 27017,
+  "host": "localhost"
+}
+```
+
+For usage of Neo4j add following lines:
+
+``` json
+"neo4j": {
+  "name": "testero-development",
+  "port": 7687,
+  "host": "localhost",
+  "user": "",
+  "password": ""
+}
+```
+
+Set configuration parameters as you need.
+
 ## Running
 
-Run MongoDB
+Run MongoDB:
 
 ``` sh
-sudo service mongod start
+sudo systemctl start mongodb
+```
+
+Run Redis:
+
+``` sh
+sudo systemctl start redis-server
+```
+
+Run Neo4j:
+
+``` sh
+sudo systemctl start neo4j
 ```
 
 Then
@@ -70,4 +128,4 @@ npm run coverage
 
 ---
 
-(c) 2015 -- 2018, Severe Island Team
+(c) 2015, Severe Island Team; 2015 -- 2021, Evgeny Simonenko

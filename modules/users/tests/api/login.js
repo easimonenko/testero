@@ -3,48 +3,25 @@
 const cookieParser = require('cookie-parser')
 const supertest = require('supertest')
 
-var agent
-var app
-var usersDB
+const usersDB = require('../../db')
+
+/** @type {supertest.SuperTest<supertest.Test>} */
+let agent
+/** @type {express.Express} */
+let app
 
 describe('Модуль users', function() {
-  before('Connect to database', function(done) {
-    const mongodb = require('mongodb')
+  before('Connect to database', function() {
+    return require('../../../../settings').getSettings()
+      .then(settings => {
+        usersDB.setup(settings)
 
-    const config = require('config')
-    const mongoHost = config.db.host || 'localhost'
-    const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'testero-testing'
-    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+        app = require('../../../../app')(settings)
+        app.use(cookieParser())
+        agent = supertest.agent(app)
 
-    mongodb.MongoClient.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    }, (err, client) => {
-      if (err) {
-        throw err
-      }
-
-      const db = client.db(dbName)
-
-      /**
-       * @typedef {Object} Settings
-       * @property {mongodb.Db} settings.mongoDBConnection
-       * @type {Settings} settings
-       */
-      const settings = {
-        mongoDBConnection: db
-      }
-
-      usersDB = require('../../db')
-      usersDB.setup(settings)
-
-      app = require('../../../../app')(settings)
-      app.use(cookieParser())
-      agent = supertest.agent(app)
-      
-      done()
-    })
+        return usersDB.clearUsers()
+      })
   })
 
   describe('Вход (login)', function() {

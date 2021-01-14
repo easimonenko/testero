@@ -7,40 +7,44 @@ const userDB = require('../../../users/db')
 const rolesDB = require('../../db/roles')
 
 describe('courses::db::roles', function() {
-    let admin = {
-	email: 'admin@testero',
-	password: 'admin',
-	passwordDuplicate: 'admin'
-    }
-    let adminId
+  let admin = {
+    email: 'admin@testero',
+    password: 'admin',
+    passwordDuplicate: 'admin'
+  }
+  let adminId
 
-    let user1 = {
-	email: 'user1@testero',
-	password: 'user1',
-	passwordDuplicate: 'user1'
-    }
-    let userId1
+  let user1 = {
+    email: 'user1@testero',
+    password: 'user1',
+    passwordDuplicate: 'user1'
+  }
+  let userId1
 
-    let user2 = {
-	email: 'user2@testero',
-	showEmail: true,
-	password: 'user2',
-	passwordDuplicate: 'user2'
-    }
-    let userId2
+  let user2 = {
+    email: 'user2@testero',
+    showEmail: true,
+    password: 'user2',
+    passwordDuplicate: 'user2'
+  }
+  let userId2
   
   before(function() {
-    const mongoHost = config.db.host || 'localhost'
-    const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'testero-testing'
-    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+    /**
+     * @type {Configuration}
+     */
+    const cfg = config
+    const mongoHost = cfg.mongodb.host || 'localhost'
+    const mongoPort = cfg.mongodb.port || '27017'
+    const mongoDBName = cfg.mongodb.name || 'testero-testing'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + mongoDBName
 
     return mongodb.MongoClient.connect(mongoUrl, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     })
       .then(client => {
-        return client.db(dbName)
+        return client.db(mongoDBName)
       })
       .then(db => {
         rolesDB.setup({mongoDBConnection: db})

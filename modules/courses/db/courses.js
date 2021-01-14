@@ -7,9 +7,9 @@ let collection
 
 const subjectsDB = require('./subjects')
 
+require('../../../settings')
+
 /**
- * @typedef {Object} Settings
- * @property {mongodb.Db} settings.mongoDBConnection
  * @param {Settings} settings
  */
 module.exports.setup = function (settings) {

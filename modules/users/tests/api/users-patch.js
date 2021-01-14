@@ -1,38 +1,17 @@
 "use strict"
 
-const config = require('config')
 const cookieParser = require('cookie-parser')
-const mongodb = require('mongodb')
 const supertest = require('supertest')
+
+const usersDB = require('../../db')
 
 let agent
 let app
-let usersDB
 
 describe('PATCH /users/users', function () {
   before('Connect to database', function() {
-    const mongoHost = config.db.host || 'localhost'
-    const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'testero-testing'
-    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
-
-    return mongodb.MongoClient.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-      .then(client => {
-        const db = client.db(dbName)
-
-        /**
-         * @typedef {Object} Settings
-         * @property {mongodb.Db} settings.mongoDBConnection
-         * @type {Settings} settings
-         */
-        const settings = {
-          mongoDBConnection: db
-        }
-
-        usersDB = require('../../db')
+    return require('../../../../settings').getSettings()
+      .then(settings => {
         usersDB.setup(settings)
 
         app = require('../../../../app')(settings)

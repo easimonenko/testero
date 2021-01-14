@@ -7,43 +7,22 @@ const supertest = require('supertest')
 
 const usersDB = require('../../db')
 
-var agent
-var app
+let agent
+let app
 
 describe('DELETE /users/users', function() {
-  before('Connect to database', function(done) {
-    const mongoHost = config.db.host || 'localhost'
-    const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'testero-testing'
-    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+  before('Connect to database', function() {
+    return require('../../../../settings').getSettings()
+      .then(settings => {
+        usersDB.setup(settings)
 
-    mongodb.MongoClient.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    }, (err, client) => {
-      if (err) {
-        throw err
-      }
+        app = require('../../../../app')(settings)
+        app.use(cookieParser())
 
-      const db = client.db(dbName)
+        agent = supertest.agent(app)
 
-      /**
-       * @typedef {Object} Settings
-       * @property {mongodb.Db} settings.mongoDBConnection
-       * @type {Settings} settings
-       */
-      const settings = {
-        mongoDBConnection: db
-      }
-      
-      usersDB.setup(settings)
-
-      app = require('../../../../app')(settings)
-      app.use(cookieParser())
-      
-      agent = supertest.agent(app)
-      done()
-    })
+        return usersDB.clearUsers()
+      })
   })
 
   let admin1 = {

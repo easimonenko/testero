@@ -8,40 +8,44 @@ const subjectsDB = require('../../db/subjects')
 const testsDB = require('../../db/tests')
 
 describe('courses::db::tests', function () {
-    const subject1 = {
-        title: 'First subject'
-    }
-    let subjectId1
+  const subject1 = {
+    title: 'First subject'
+  }
+  let subjectId1
 
-    const test1 = {
-        question: 'Question1',
-        answer_type: 'number',
-        answer: 42
-    }
-    let testId1
+  const test1 = {
+    question: 'Question1',
+    answer_type: 'number',
+    answer: 42
+  }
+  let testId1
 
-    before(function () {
-      const mongoHost = config.db.host || 'localhost'
-      const mongoPort = config.db.port || '27017'
-      const dbName = config.db.name || 'testero-testing'
-      const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
+  before(function () {
+    /**
+     * @type {Configuration}
+     */
+    const cfg = config
+    const mongoHost = cfg.mongodb.host || 'localhost'
+    const mongoPort = cfg.mongodb.port || '27017'
+    const mongoDBName = cfg.mongodb.name || 'testero-testing'
+    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + mongoDBName
 
-      return mongodb.MongoClient.connect(mongoUrl, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true
-      })
-        .then(client => {
-          return client.db(dbName)
-        })
-        .then(db => {
-          subjectsDB.setup({mongoDBConnection: db})
-          testsDB.setup({mongoDBConnection: db})
-          return testsDB.clear()
-            .then(() => {
-              return subjectsDB.clear()
-            })
-        })
+    return mongodb.MongoClient.connect(mongoUrl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     })
+      .then(client => {
+        return client.db(mongoDBName)
+      })
+      .then(db => {
+        subjectsDB.setup({mongoDBConnection: db})
+        testsDB.setup({mongoDBConnection: db})
+        return testsDB.clear()
+          .then(() => {
+            return subjectsDB.clear()
+          })
+      })
+  })
 
     context('There is any subject', function () {
         before(function () {

@@ -1,8 +1,6 @@
 "use strict"
 
-const config = require('config')
 const cookieParser = require('cookie-parser')
-const mongodb = require('mongodb')
 const supertest = require('supertest')
 
 const coursesDB = require('../../db/courses')
@@ -16,28 +14,8 @@ describe('/courses/assignRole', function() {
   let app
 
   before(function() {
-    const mongoHost = config.db.host || 'localhost'
-    const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'testero-testing'
-    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
-
-    return mongodb.MongoClient.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-      .then(client => {
-        return client.db(dbName)
-      })
-      .then(db => {
-        /**
-         * @typedef {Object} Settings
-         * @property {mongodb.Db} settings.mongoDBConnection
-         * @type {Settings} settings
-         */
-        const settings = {
-          mongoDBConnection: db
-        }
-
+    return require('../../../../settings').getSettings()
+      .then(settings => {
         coursesDB.setup(settings)
         rolesDB.setup(settings)
         usersDB.setup(settings)

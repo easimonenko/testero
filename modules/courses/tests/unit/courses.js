@@ -1,7 +1,5 @@
 "use strict"
 
-const config = require('config')
-const mongodb = require('mongodb')
 const should = require('should')
 
 const coursesDB = require('../../db/courses')
@@ -18,20 +16,9 @@ describe('courses::db::courses', function() {
   let subjectId1
   
   before(function() {
-    const mongoHost = config.db.host || 'localhost'
-    const mongoPort = config.db.port || '27017'
-    const dbName = config.db.name || 'testero-testing'
-    const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
-
-    return mongodb.MongoClient.connect(mongoUrl, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    })
-      .then(client => {
-        return client.db(dbName)
-      })
-      .then(db => {
-        coursesDB.setup({mongoDBConnection: db})
+    require('../../../../settings').getSettings()
+      .then(settings => {
+        coursesDB.setup(settings)
         return coursesDB.clear()
       })
   })

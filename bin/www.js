@@ -8,38 +8,16 @@
 
 const debug = require('debug')('testero:server')
 const http = require('http')
-const mongodb = require('mongodb')
+
+const cfg = require('../configuration').getConfiguration()
 
 /**
- * Get port from environment and store in Express.
+ * Get port from configuration or environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(cfg.port || process.env.PORT || '3000');
 
-/**
- * Connect to MongoDB server.
- */
-
-const config = require('config')
-const mongoHost = config.db.host || 'localhost'
-const mongoPort = config.db.port || '27017'
-const dbName = config.db.name || 'production'
-const mongoUrl = 'mongodb://' + mongoHost + ':' + mongoPort + '/' + dbName
-
-mongodb.MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true }, (err, client) => {
-  if (err) {
-    throw err
-  }
-
-  /**
-   * @typedef {Object} Settings
-   * @property {mongodb.Db} settings.mongoDBConnection
-   * @param {Settings} settings
-   */
-  const settings = {
-    mongoDBConnection: client.db(dbName)
-  }
-
+require('../settings').getSettings().then(settings => {
   /**
    * Create HTTP server.
    */
@@ -72,8 +50,7 @@ mongodb.MongoClient.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopolog
       : 'port ' + addr.port;
     debug('Listening on ' + bind);
   }
-}
-)
+})
 
 /**
  * Normalize a port into a number, string, or false.
